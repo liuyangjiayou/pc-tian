@@ -36,7 +36,7 @@ module.exports = {
     open: true,
     proxy: {
       '/api': {
-        target: 'https://axmtadmin.zhyell.com/api',
+        target: 'https://axmtadmin.zhyell.com',
         ws: true,
         changeOrigin: true
       }
@@ -45,7 +45,6 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    before: require('./mock/mock-server.js')
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
