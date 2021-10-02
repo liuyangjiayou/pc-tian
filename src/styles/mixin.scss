@@ -75,9 +75,40 @@
     width: #{$width}px;
   }
 }
+
 /*  -- 字体相关 -- */
 @each $size in 0, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 36, 40, 44{
   .fs#{$size} {
     font-size: #{$size}px;
+  }
+}
+
+/*  -- 内外边距 -- */
+@each $name in m, mt, mr, mb, ml, mx, my {
+  @each $size in -40, -25, -20, -8, -5, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 18, 20, 25, 30, 33, 34, 35, 40, 45, 50, 60, 80, 90, 110, 260 {
+    .#{$name}#{$size} {
+      @if $name == mt { margin-top: #{$size}px; }
+      @else if $name == mr { margin-right: #{$size}px; }
+      @else if $name == mb { margin-bottom: #{$size}px; }
+      @else if $name == ml { margin-left: #{$size}px; }
+      @else if $name == mx { margin-left: #{$size}px; margin-right: #{$size}px; }
+      @else if $name == my { margin-top: #{$size}px; margin-bottom: #{$size}px; }
+      @else { margin: #{$size}px; }
+    }
+  }
+}
+
+/*  -- 内外边距 -- */
+@each $name in p, pt, pr, pb, pl, px, py {
+  @each $size in 0, 4, 5, 6, 8, 10, 12, 15, 16, 18, 20, 22, 25, 30, 35, 40, 45, 50 {
+    .#{$name}#{$size} {
+      @if $name == pt { padding-top: #{$size}px; }
+      @else if $name == pr { padding-right: #{$size}px; }
+      @else if $name == pb { padding-bottom: #{$size}px; }
+      @else if $name == pl { padding-left: #{$size}px; }
+      @else if $name == px { padding-left: #{$size}px; padding-right: #{$size}px; }
+      @else if $name == py { padding-top: #{$size}px; padding-bottom: #{$size}px; }
+      @else { padding: #{$size}px; }
+    }
   }
 }

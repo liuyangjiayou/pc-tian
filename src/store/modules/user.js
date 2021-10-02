@@ -1,12 +1,14 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { login, getInfo } from '@/api/user'
+import { getToken, setToken, removeToken, setUser, getUser, removeUser } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
     name: '',
-    avatar: ''
+    avatar: '',
+    // type 当前角色 1代表县区级工会  2基层工会  3市区工会
+    userInfo: getUser()
   }
 }
 
@@ -18,6 +20,9 @@ const mutations = {
   },
   SET_TOKEN: (state, token) => {
     state.token = token
+  },
+  SET_USER_INFO: (state, userInfo) => {
+    state.userInfo = userInfo
   },
   SET_NAME: (state, name) => {
     state.name = name
@@ -32,10 +37,11 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
+      login({ acc: username, pwd: password }).then(response => {
+        commit('SET_TOKEN', response.token)
+        commit('SET_USER_INFO', response.user)
+        setToken(response.token)
+        setUser(response.user)
         resolve()
       }).catch(error => {
         reject(error)
@@ -67,14 +73,11 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        removeToken() // must remove  token  first
-        resetRouter()
-        commit('RESET_STATE')
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
+      removeToken() // must remove  token  first
+      removeUser() // must remove  User  first
+      resetRouter()
+      commit('RESET_STATE')
+      resolve()
     })
   },
 
@@ -82,6 +85,7 @@ const actions = {
   resetToken({ commit }) {
     return new Promise(resolve => {
       removeToken() // must remove  token  first
+      removeUser()
       commit('RESET_STATE')
       resolve()
     })
