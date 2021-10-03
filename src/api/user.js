@@ -113,17 +113,30 @@ export function getProductEdit(data) {
   })
 }
 
-export function getInfo(token) {
+// 赛事修改获取详情
+export function addScore(data) {
   return request({
-    url: '/vue-admin-template/user/info',
-    method: 'get',
-    params: { token }
+    url: '/v1/rank/addscore',
+    method: 'post',
+    data
   })
 }
 
-export function logout() {
+// 赛事修改获取详情
+export function addUprank(data) {
   return request({
-    url: '/vue-admin-template/user/logout',
-    method: 'post'
+    url: '/v1/rank/uprankvideo',
+    method: 'post',
+    data
   })
 }
+
+// 修改密码
+export function changePwd(data) {
+  return request({
+    url: '/v1/user/chpwd',
+    method: 'post',
+    data
+  })
+}
+

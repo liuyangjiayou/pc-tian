@@ -12,23 +12,37 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
-            <el-dropdown-item>
-              Home
-            </el-dropdown-item>
-          </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
+          <el-dropdown-item divided @click.native="dialogVisible = true">
+            <span style="display:block;">修改密码</span>
+          </el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+
+    <!-- 修改 -->
+    <el-dialog
+      title="修改密码"
+      :visible.sync="dialogVisible"
+      width="30%">
+      <el-form ref="formInfo" :model="info">
+        <el-form-item prop="phone" verify>
+          <el-input v-model="info.phone" placeholder="账号" />
+        </el-form-item>
+        <el-form-item prop="password" verify>
+          <el-input v-model="info.oldpassword" placeholder="请输入旧密码" />
+        </el-form-item>
+        <el-form-item prop="oldpassword" verify>
+          <el-input v-model="info.password" placeholder="请输入新密码" />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="close">取消</el-button>
+        <el-button type="primary" :loading="scoreLoading" @click="addSubScore">确定修改</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -36,11 +50,25 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
-
+import { changePwd } from '@/api/user'
+function info() {
+  return {
+    phone: '',
+    password: '',
+    oldpassword: ''
+  }
+}
 export default {
   components: {
     Breadcrumb,
     Hamburger
+  },
+  data() {
+    return {
+      dialogVisible: false,
+      info: info(),
+      scoreLoading: false
+    }
   },
   computed: {
     ...mapGetters([
@@ -49,6 +77,17 @@ export default {
     ])
   },
   methods: {
+    async addSubScore() {
+      await this.$refs.formInfo.validate()
+      this.scoreLoading = true
+      await changePwd(this.info).finally(() => {
+        this.scoreLoading = false
+      })
+    },
+    close() {
+      this.dialogVisible = false
+      this.info = info()
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },

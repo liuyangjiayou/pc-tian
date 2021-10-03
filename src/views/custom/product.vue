@@ -84,6 +84,8 @@
       >
         <template v-slot="{ row }">
           <el-button type="text" @click="handlerEdit(row)">修改</el-button>
+          <el-button type="text" @click="addUprankFile(row)">上传作品</el-button>
+          <el-button type="text" @click="handlerScore(row)">打分</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -94,17 +96,68 @@
         @current-change="handlerPageChange"
       />
     </div>
+    <el-dialog
+      title="打分"
+      :visible.sync="dialogVisible"
+      width="30%">
+      <el-form ref="formScore" :model="FormScore">
+        <el-form-item prop="score" verify number error-message="请输入数字">
+          <el-input v-model="FormScore.score" placeholder="" />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="close">取消</el-button>
+        <el-button type="primary" :loading="scoreLoading" @click="addSubScore">确定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="上传作品"
+      :visible.sync="upDateFileVisible"
+      width="30%">
+      <el-form>
+        <el-upload
+          ref="upload"
+          class="upload-demo"
+          :headers="{
+            Authorization: `Bearer ${$store.state.user.token}`
+          }"
+          :data="{
+            rank_id: upDateData.rank_id
+          }"
+          action="https://axmtadmin.zhyell.com/api/v1/rank/uprankvideo"
+          multiple
+          :auto-upload="false"
+          :on-success="upSuccess"
+          :file-list="fileList">
+          <el-button slot="trigger" size="small" type="primary">选择文件</el-button>
+          <div class="el-upload__tip" slot="tip">请上传MP4格式，且不超过500M</div>
+        </el-upload>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="close">关闭</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">开始上传</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getBroadCastList, getLower, getProduct } from '@/api/user'
-
+import { addScore, getBroadCastList, getLower, getProduct } from '@/api/user'
+function formScore() {
+  return {
+    rank_id: '',
+    score: ''
+  }
+}
 export default {
   name: 'Product',
   data() {
     return {
       tableData: [],
+      scoreLoading: false,
+      // 打分表单
+      FormScore: formScore(),
+
       form: {
         org_id: '',	// 工会id，获取下级工会
         project_id: '',	// 项目id
@@ -115,7 +168,15 @@ export default {
       // 活动列表/项目
       broadcastList: [],
       // 机构/工会
-      lowerList: []
+      lowerList: [],
+      // 打分
+      dialogVisible: false,
+      // 上传作品
+      upDateFileVisible: false,
+      fileList: [],
+      upDateData: {
+        rank_id: ''
+      }
     }
   },
   computed: {
@@ -133,6 +194,44 @@ export default {
     this.getList()
   },
   methods: {
+    upSuccess(response, file, fileList) {
+      if (response.code !== 0) {
+        file.status = 'error'
+      }
+      this.$message({
+        message: response.msg,
+        type: response.code === 0 ? 'success' : 'error'
+      })
+    },
+    submitUpload() {
+      this.$refs.upload.submit()
+    },
+    // 上传作品
+    addUprankFile(data) {
+      this.upDateData.rank_id = data.id;
+      this.upDateFileVisible = true
+    },
+
+    // 开始打分
+    async addSubScore() {
+      await this.$refs.formScore.validate()
+      this.scoreLoading = true
+      await addScore(this.FormScore).finally(() => {
+        this.scoreLoading = false
+      })
+      this.FormScore = formScore()
+    },
+    // 给队伍打分
+    handlerScore(data) {
+      this.FormScore.rank_id = data.id
+      this.dialogVisible = true
+    },
+    // 给队伍打分取消按钮
+    close() {
+      this.FormScore = formScore()
+      this.dialogVisible = false
+      this.upDateFileVisible = false
+    },
     // 修改队伍
     handlerEdit(data) {
       this.$router.push({ name: 'ProductAdd', query: { id: data.id }})

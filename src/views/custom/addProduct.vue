@@ -44,7 +44,7 @@
           </el-form-item>
         </div>
       </template>
-      <el-button v-if="formDate.ranks_users.length < 5" type="text" @click="addPerson">添加一个参赛人员</el-button>
+      <el-button v-if="formDate.ranks_users.length < personLength" type="text" @click="addPerson">添加一个参赛人员</el-button>
       <el-form-item class="pt20">
         <el-button type="primary" :loading="loading" @click="submit">添加</el-button>
       </el-form-item>
@@ -59,6 +59,8 @@ export default {
   name: 'AddProduct',
   data() {
     return {
+      // 人物列表长度
+      personLength: 5,
       formDate: {
         project_id: '', // 项目ID
         org_id: '', // 工会id
@@ -74,9 +76,22 @@ export default {
         rank_id: this.$route.query.id || ''
       },
       loading: false,
+      // 项目/活动 列表 pro_type = 1 需要有10人参加
       broadcastList: [],
       // 机构/工会
       lowerList: []
+    }
+  },
+  watch: {
+    'formDate.project_id': {
+      handler(val) {
+        const item = this.broadcastList.find(item => item.id === val)
+        if (item.pro_type === 1) {
+          this.personLength = 10
+        } else {
+          this.personLength = 5
+        }
+      }
     }
   },
   mounted() {
@@ -86,7 +101,7 @@ export default {
     getLower().then(res => {
       this.lowerList = res.list
     })
-    this.getProductEdit()
+    this.$route.query.id && this.getProductEdit()
   },
   methods: {
     // 获取详情
@@ -114,6 +129,24 @@ export default {
     // 提交
     async submit() {
       await this.$refs.form.validate()
+      const phone = []
+      const iDCard = []
+      let lock = false
+      this.formDate.ranks_users.forEach(item => {
+        if (phone.includes(item.user_phone)) {
+          lock = true
+          return this.$alert('队伍中有相同的手机号')
+        } else {
+          phone.push(item.user_phone)
+        }
+        if (iDCard.includes(item.user_idcard)) {
+          lock = true
+          return this.$alert('队伍中有相同的身份账号')
+        } else {
+          iDCard.push(item.user_idcard)
+        }
+      })
+      if (lock) return
       this.loading = true
       await addProduct(this.formDate).finally(() => {
         this.loading = false
