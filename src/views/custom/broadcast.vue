@@ -1,5 +1,6 @@
 <template>
   <el-table
+    border
     empty-text="暂无数据"
     :data="tableData"
   >

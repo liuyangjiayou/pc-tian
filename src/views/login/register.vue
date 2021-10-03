@@ -5,22 +5,32 @@
       <div class="title-container">
         <h3 class="title">注册</h3>
       </div>
-      <el-form-item prop="org_pid" verify class="flex align-center">
-        <el-select v-model="registerForm.org_pid" class="org-select" placeholder="请选择您归属的工会">
-          <el-option
-            v-for="item in orgs"
-            :key="item.id"
-            :label="item.org_name"
-            :value="item.id"
-          />
-        </el-select>
+      <el-form-item prop="org_pid" verify>
+        <div class="flex align-center">
+          <span class="svg-container">
+            <i class="el-icon-s-tools fs16" />
+          </span>
+          <el-select v-model="registerForm.org_pid" class="org-select" filterable no-match-text="无搜索结果" placeholder="请选择您归属的工会">
+            <el-option
+              v-for="item in orgs"
+              :key="item.id"
+              :label="item.org_name"
+              :value="item.id"
+            />
+          </el-select>
+        </div>
       </el-form-item>
       <el-form-item v-if="registerForm.org_pid !== ''" prop="org_name" verify>
-        <el-input
-          v-model="registerForm.org_name"
-          placeholder="请填写基础工会名称"
-          type="text"
-        />
+        <div class="flex align-center">
+          <span class="svg-container">
+            <i class="el-icon-s-ticket fs16" />
+          </span>
+          <el-input
+            v-model="registerForm.org_name"
+            placeholder="请填写基础工会名称"
+            type="text"
+          />
+        </div>
       </el-form-item>
       <el-form-item prop="phone" verify phone>
         <div class="flex align-center">
@@ -56,7 +66,7 @@
       <el-form-item prop="sms_code" verify>
         <div class="flex align-center">
           <span class="svg-container">
-            <i class="el-icon-message fs16" />
+            <i class="el-icon-s-promotion fs16" />
           </span>
           <el-input
             v-model="registerForm.sms_code"
@@ -225,12 +235,8 @@ export default {
   }
 
   .org-select {
-    width: 448px;
-    .el-input {
-      box-sizing: border-box;
-      padding-left: 30px;
-      width: 100%;
-    }
+    display: inline-block;
+    width: 100%;
   }
 }
 </style>

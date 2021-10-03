@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
 Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
+import { getUser } from '@/utils/auth'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -57,7 +57,9 @@ export const constantRoutes = [
       hidden: true,
       meta: { title: '添加队伍名称', icon: 'el-icon-s-help' }
     }]
-  },
+  }
+]
+const asyncRouter = [
   {
     path: '/labor',
     component: Layout,
@@ -83,15 +85,20 @@ export const constantRoutes = [
         meta: { title: '活动列表', icon: 'el-icon-s-help' }
       }
     ]
-  },
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
-]
-
+  }]
+// 404 page must be placed at the end !!!
+const router_404 = { path: '*', redirect: '/404', hidden: true }
+const user = getUser()
+let routers = []
+if (user.type !== 2) {
+  routers = constantRoutes.concat(asyncRouter).concat(router_404)
+} else {
+  routers = constantRoutes.concat(router_404)
+}
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+  routes: routers
 })
 
 const router = createRouter()

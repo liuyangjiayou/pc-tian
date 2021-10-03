@@ -17,7 +17,7 @@
       </el-form-item>
       <el-form-item prop="pwd" verify>
         <span class="svg-container">
-          <svg-icon icon-class="pwd" />
+          <svg-icon icon-class="password" />
         </span>
         <el-input
           v-model="loginForm.pwd"
@@ -43,7 +43,7 @@ export default {
     return {
       // 登录还是注册
       is_login: true,
-      // 登录表单
+      // 登录表单 石家庄市新华区总工会
       loginForm: {
         acc: '石家庄市新华区总工会',
         pwd: '123456'

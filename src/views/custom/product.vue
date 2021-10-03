@@ -14,7 +14,7 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="选择工会">
+      <el-form-item v-if="userInfo.type !== 2" label="选择工会">
         <el-select v-model="form.org_id" placeholder="请选择" clearable>
           <el-option
             v-for="item in lowerList"
@@ -28,11 +28,12 @@
         <el-button type="primary" @click="onSubmit">搜索</el-button>
       </el-form-item>
     </el-form>
-    <div class="flex align-center justify-end">
-      <el-button type="primary" plain @click="addRank">赛事报名</el-button>
+    <div v-if="userInfo.type === 2" class="flex align-center justify-end">
+      <el-button type="primary" plain class="mb10" @click="addRank">赛事报名</el-button>
     </div>
     <el-table
       empty-text="暂无数据"
+      border
       :data="tableData"
     >
       <el-table-column
@@ -83,9 +84,9 @@
         label="操作"
       >
         <template v-slot="{ row }">
-          <el-button type="text" @click="handlerEdit(row)">修改</el-button>
-          <el-button type="text" @click="addUprankFile(row)">上传作品</el-button>
-          <el-button type="text" @click="handlerScore(row)">打分</el-button>
+          <el-button v-if="userInfo.type === 2" type="text" @click="handlerEdit(row)">修改</el-button>
+          <el-button v-if="userInfo.type === 2" type="text" @click="addUprankFile(row)">上传作品</el-button>
+          <el-button v-if="userInfo.type === 3" type="text" @click="handlerScore(row)">打分</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -188,7 +189,7 @@ export default {
     getBroadCastList().then(res => {
       this.broadcastList = res.list
     })
-    getLower().then(res => {
+    this.userInfo.type !== 2 && getLower().then(res => {
       this.lowerList = res.list
     })
     this.getList()

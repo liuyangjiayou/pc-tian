@@ -14,16 +14,6 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="选择工会" prop="org_id" verify>
-        <el-select v-model="formDate.org_id" placeholder="请选择" clearable>
-          <el-option
-            v-for="item in lowerList"
-            :key="item.id"
-            :label="item.org_name"
-            :value="item.id">
-          </el-option>
-        </el-select>
-      </el-form-item>
       <el-form-item label="队伍名称" prop="ranks_name" verify>
         <el-input v-model="formDate.ranks_name" placeholder="请填写" />
       </el-form-item>
@@ -53,7 +43,7 @@
 </template>
 
 <script>
-import { addProduct, getBroadCastList, getLower, getProductEdit } from '@/api/user'
+import { addProduct, getBroadCastList, getProductEdit } from '@/api/user'
 
 export default {
   name: 'AddProduct',
@@ -63,7 +53,6 @@ export default {
       personLength: 5,
       formDate: {
         project_id: '', // 项目ID
-        org_id: '', // 工会id
         ranks_name: '', // 队伍名字
         ranks_users: [
           {
@@ -82,6 +71,11 @@ export default {
       lowerList: []
     }
   },
+  computed: {
+    userInfo() {
+      return this.$store.state.user.userInfo
+    }
+  },
   watch: {
     'formDate.project_id': {
       handler(val) {
@@ -97,9 +91,6 @@ export default {
   mounted() {
     getBroadCastList().then(res => {
       this.broadcastList = res.list
-    })
-    getLower().then(res => {
-      this.lowerList = res.list
     })
     this.$route.query.id && this.getProductEdit()
   },

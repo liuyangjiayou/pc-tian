@@ -32,10 +32,10 @@
           <el-input v-model="info.phone" placeholder="账号" />
         </el-form-item>
         <el-form-item prop="password" verify>
-          <el-input v-model="info.oldpassword" placeholder="请输入旧密码" />
+          <el-input v-model="info.oldpassword" type="password" placeholder="请输入旧密码" />
         </el-form-item>
         <el-form-item prop="oldpassword" verify>
-          <el-input v-model="info.password" placeholder="请输入新密码" />
+          <el-input v-model="info.password" type="password" placeholder="请输入新密码" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -83,6 +83,7 @@ export default {
       await changePwd(this.info).finally(() => {
         this.scoreLoading = false
       })
+      this.logout()
     },
     close() {
       this.dialogVisible = false

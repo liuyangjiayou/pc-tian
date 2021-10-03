@@ -140,3 +140,11 @@ export function changePwd(data) {
   })
 }
 
+// 设置
+export function setting(data) {
+  return request({
+    url: 'v1/sys/setting',
+    method: 'post',
+    data
+  })
+}
