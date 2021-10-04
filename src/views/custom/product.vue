@@ -85,7 +85,7 @@
       >
         <template v-slot="{ row }">
           <el-button v-if="userInfo.type === 2" type="text" @click="handlerEdit(row)">修改</el-button>
-          <el-button v-if="userInfo.type === 2" type="text" @click="addUprankFile(row)">上传作品</el-button>
+          <el-button v-if="userInfo.type === 2 && row.ranks_status" type="text" @click="addUprankFile(row)">上传作品</el-button>
           <el-button v-if="userInfo.type === 3" type="text" @click="handlerScore(row)">打分</el-button>
         </template>
       </el-table-column>
@@ -115,18 +115,18 @@
       title="上传作品"
       :visible.sync="upDateFileVisible"
       width="30%">
-      <el-form>
+      <el-form ref="upDateForm" inline :model="upDateData">
+        <el-form-item label="作品名" prop="ranks_video_name" verify>
+          <el-input v-model="upDateData.ranks_video_name" placeholder="请填写作品名" />
+        </el-form-item>
         <el-upload
           ref="upload"
           class="upload-demo"
           :headers="{
             Authorization: `Bearer ${$store.state.user.token}`
           }"
-          :data="{
-            rank_id: upDateData.rank_id
-          }"
+          :data="upDateData"
           action="https://axmtadmin.zhyell.com/api/v1/rank/uprankvideo"
-          multiple
           :auto-upload="false"
           :on-success="upSuccess"
           :file-list="fileList">
@@ -176,7 +176,8 @@ export default {
       upDateFileVisible: false,
       fileList: [],
       upDateData: {
-        rank_id: ''
+        rank_id: '',
+        ranks_video_name: ''
       }
     }
   },
@@ -204,12 +205,13 @@ export default {
         type: response.code === 0 ? 'success' : 'error'
       })
     },
-    submitUpload() {
+    async submitUpload() {
+      await this.$refs.upDateForm.validate()
       this.$refs.upload.submit()
     },
     // 上传作品
     addUprankFile(data) {
-      this.upDateData.rank_id = data.id;
+      this.upDateData.rank_id = data.id
       this.upDateFileVisible = true
     },
 

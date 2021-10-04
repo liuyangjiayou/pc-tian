@@ -27,11 +27,18 @@ import variables from '@/styles/variables.scss'
 export default {
   components: { SidebarItem, Logo },
   computed: {
+    userInfo() {
+      return this.$store.state.user.userInfo
+    },
     ...mapGetters([
       'sidebar'
     ]),
     routes() {
-      return this.$router.options.routes
+      if (this.userInfo.type === 2) {
+        return this.$router.options.routes.filter(item => item.path !== '/labor')
+      } else {
+        return this.$router.options.routes
+      }
     },
     activeMenu() {
       const route = this.$route

@@ -50,6 +50,9 @@ export default {
       default: ''
     }
   },
+  userInfo() {
+    return this.$store.state.user.userInfo
+  },
   data() {
     // To fix https://github.com/PanJiaChen/vue-admin-template/issues/237
     // TODO: refactor with render function

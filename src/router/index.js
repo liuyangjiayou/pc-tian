@@ -59,7 +59,7 @@ export const constantRoutes = [
     }]
   }
 ]
-const asyncRouter = [
+export const asyncRouter = [
   {
     path: '/labor',
     component: Layout,
@@ -72,33 +72,13 @@ const asyncRouter = [
         meta: { title: '基础工会管理', icon: 'el-icon-s-help' }
       }
     ]
-  },
-  {
-    path: '/broadcast',
-    component: Layout,
-    name: 'Broadcast',
-    children: [
-      {
-        path: 'index',
-        name: 'BroadcastList',
-        component: () => import('@/views/custom/broadcast'),
-        meta: { title: '活动列表', icon: 'el-icon-s-help' }
-      }
-    ]
   }]
 // 404 page must be placed at the end !!!
-const router_404 = { path: '*', redirect: '/404', hidden: true }
-const user = getUser()
-let routers = []
-if (user.type !== 2) {
-  routers = constantRoutes.concat(asyncRouter).concat(router_404)
-} else {
-  routers = constantRoutes.concat(router_404)
-}
+export const router_404 = { path: '*', redirect: '/404', hidden: true }
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: routers
+  routes: constantRoutes.concat(asyncRouter).concat(router_404)
 })
 
 const router = createRouter()

@@ -2,6 +2,7 @@
   <div class="login-container">
     <!--  注册  -->
     <el-form ref="registerForm" :model="registerForm" class="login-form" auto-complete="on" label-position="left">
+      <h5 class="title flex fs20 align-center justify-center"><span>河北省职工“云”上运动会</span></h5>
       <div class="title-container">
         <h3 class="title">注册</h3>
       </div>
@@ -202,6 +203,7 @@ export default {
       await register(this.registerForm).finally(() => {
         this.loading = false
       })
+      this.$router.push('/login')
     }
   }
 }

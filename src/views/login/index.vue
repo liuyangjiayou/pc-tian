@@ -2,7 +2,7 @@
   <div class="login-container">
     <!--  登录  -->
     <el-form ref="loginForm" :model="loginForm" class="login-form" auto-complete="on" label-position="left">
-
+      <h5 class="title flex fs20 align-center justify-center"><span>河北省职工“云”上运动会</span></h5>
       <div class="title-container">
         <h3 class="title">登录</h3>
       </div>
@@ -45,8 +45,8 @@ export default {
       is_login: true,
       // 登录表单 石家庄市新华区总工会
       loginForm: {
-        acc: '石家庄市新华区总工会',
-        pwd: '123456'
+        acc: '',
+        pwd: ''
       },
       // 登录loading
       loading: false,
