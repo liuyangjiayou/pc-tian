@@ -148,3 +148,13 @@ export function setting(data) {
     data
   })
 }
+
+// 通过赛事报名
+export function chstatusPass(data) {
+  return request({
+    url: 'v1/rank/chstatus',
+    method: 'post',
+    data
+  })
+}
+

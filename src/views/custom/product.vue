@@ -28,7 +28,7 @@
         <el-button type="primary" @click="onSubmit">搜索</el-button>
       </el-form-item>
     </el-form>
-    <div v-if="userInfo.type === 2" class="flex align-center justify-end">
+    <div v-if="userInfo.type === 2 && setting.is_bm === 2" class="flex align-center justify-end">
       <el-button type="primary" plain class="mb10" @click="addRank">赛事报名</el-button>
     </div>
     <el-table
@@ -73,6 +73,13 @@
       >
       </el-table-column>
       <el-table-column
+        label="队伍分数"
+      >
+        <template v-slot="{ row }">
+          <span>{{ row.rank_score }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
         prop="pro_name"
         label="队伍状态"
       >
@@ -85,8 +92,9 @@
       >
         <template v-slot="{ row }">
           <el-button v-if="userInfo.type === 2" type="text" @click="handlerEdit(row)">修改</el-button>
-          <el-button v-if="userInfo.type === 2 && row.ranks_status" type="text" @click="addUprankFile(row)">上传作品</el-button>
-          <el-button v-if="userInfo.type === 3" type="text" @click="handlerScore(row)">打分</el-button>
+          <el-button v-if="userInfo.type === 2 && row.ranks_status && setting.is_up === 2" type="text" @click="addUprankFile(row)">上传作品</el-button>
+          <el-button v-if="userInfo.type === 3 && setting.is_df === 2" type="text" @click="handlerScore(row)">打分</el-button>
+          <el-button v-if="userInfo.type !== 2 && row.ranks_status !== 1" type="text" @click="handlerPass(row)">通过</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -143,7 +151,7 @@
 </template>
 
 <script>
-import { addScore, getBroadCastList, getLower, getProduct } from '@/api/user'
+import { addScore, chstatusPass, getBroadCastList, getLower, getProduct, passLower, setting } from '@/api/user'
 function formScore() {
   return {
     rank_id: '',
@@ -178,6 +186,11 @@ export default {
       upDateData: {
         rank_id: '',
         ranks_video_name: ''
+      },
+      setting: {
+        is_bm: '',
+        is_df: '',
+        is_up: ''
       }
     }
   },
@@ -187,6 +200,9 @@ export default {
     }
   },
   mounted() {
+    setting().then(res => {
+      this.setting = res.setting
+    })
     getBroadCastList().then(res => {
       this.broadcastList = res.list
     })
@@ -196,6 +212,30 @@ export default {
     this.getList()
   },
   methods: {
+    // 通过按钮
+    async handlerPass(row) {
+      this.$msgbox({
+        title: '提示',
+        message: '确定要通过这个申请吗？',
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        beforeClose: async(action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '正在通过中...'
+            await chstatusPass({ status: 1, rank_id: row.id }).finally(() => {
+              instance.confirmButtonLoading = false
+            })
+            this.getList()
+            instance.confirmButtonLoading = false
+            done()
+          } else {
+            done()
+          }
+        }
+      })
+    },
     upSuccess(response, file, fileList) {
       if (response.code !== 0) {
         file.status = 'error'

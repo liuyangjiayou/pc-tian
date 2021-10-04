@@ -142,6 +142,7 @@ export default {
       await addProduct(this.formDate).finally(() => {
         this.loading = false
       })
+      this.$router.push({ path: '/dashboard' })
     }
   }
 }
