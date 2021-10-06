@@ -145,7 +145,10 @@ export function setting(data) {
   return request({
     url: 'v1/sys/setting',
     method: 'post',
-    data
+    data,
+    customOptions: {
+      no_message: true
+    }
   })
 }
 

@@ -29,7 +29,6 @@
     </el-table-column>
     <el-table-column label="操作">
       <template v-slot="{ row }">
-        <!--        <el-button type="text" @click="handlerPass(row)">查看信息</el-button>-->
         <el-button v-if="row.org_status !== 1 && userInfo.type === 1" type="text" @click="handlerPass(row)">通过</el-button>
       </template>
     </el-table-column>

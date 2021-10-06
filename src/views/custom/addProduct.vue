@@ -98,7 +98,6 @@ export default {
     // 获取详情
     getProductEdit() {
       getProductEdit({ rank_id: this.$route.query.id }).then(res => {
-        console.log(res)
         this.formDate.project_id = res.rank_info.project_id // 项目ID
         this.formDate.org_id = res.rank_info.ranks_org_id // 工会id
         this.formDate.ranks_name = res.rank_info.ranks_name // 队伍名字

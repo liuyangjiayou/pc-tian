@@ -56,6 +56,12 @@ export const constantRoutes = [
       component: () => import('@/views/custom/addProduct'),
       hidden: true,
       meta: { title: '添加队伍名称', icon: 'el-icon-s-help' }
+    }, {
+      path: 'details',
+      name: 'Details',
+      component: () => import('@/views/custom/rankDetails'),
+      hidden: true,
+      meta: { title: '队伍详情', icon: 'el-icon-s-help' }
     }]
   }
 ]

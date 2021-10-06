@@ -91,6 +91,7 @@
         label="操作"
       >
         <template v-slot="{ row }">
+          <el-button type="text" @click="viewDetails(row)">查看信息</el-button>
           <el-button v-if="userInfo.type === 2" type="text" @click="handlerEdit(row)">修改</el-button>
           <el-button v-if="userInfo.type === 2 && row.ranks_status && setting.is_up === 2" type="text" @click="addUprankFile(row)">上传作品</el-button>
           <el-button v-if="userInfo.type === 3 && setting.is_df === 2" type="text" @click="handlerScore(row)">打分</el-button>
@@ -101,7 +102,7 @@
     <div class="block mt20">
       <el-pagination
         layout="prev, pager, next"
-        :total="tableData.length"
+        :total="count"
         @current-change="handlerPageChange"
       />
     </div>
@@ -151,7 +152,7 @@
 </template>
 
 <script>
-import { addScore, chstatusPass, getBroadCastList, getLower, getProduct, passLower, setting } from '@/api/user'
+import { addScore, chstatusPass, getBroadCastList, getLower, getProduct, setting } from '@/api/user'
 function formScore() {
   return {
     rank_id: '',
@@ -166,12 +167,12 @@ export default {
       scoreLoading: false,
       // 打分表单
       FormScore: formScore(),
-
+      count: 0,
       form: {
         org_id: '',	// 工会id，获取下级工会
         project_id: '',	// 项目id
         rank_name: '', //	模糊查询
-        page: 1, //	页数
+        page: this.$route.query.page || 0, //	页数
         pagesize: 10 //	每页数量
       },
       // 活动列表/项目
@@ -212,6 +213,10 @@ export default {
     this.getList()
   },
   methods: {
+    // 查看详情
+    viewDetails(data) {
+      this.$router.push({ name: 'Details', query: { id: data.id, status: data.ranks_status, page: this.form.page }})
+    },
     // 通过按钮
     async handlerPass(row) {
       this.$msgbox({
@@ -290,6 +295,7 @@ export default {
     getList() {
       getProduct(this.form).then(res => {
         this.tableData = res.list
+        this.count = res.count
       })
     },
     // 添加队伍名称
