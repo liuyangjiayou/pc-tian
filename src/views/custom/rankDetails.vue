@@ -5,14 +5,14 @@
     <el-form-item label="参数人员">
       <div class="flex align-center flex-row is-justify-space-between person">
         <div v-for="item in rank_users" :key="item.id" :span="4" class="mr30">
-          <el-avatar shape="square" :size="size" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+          <el-avatar shape="square" :size="60" :src="item.avatar || `https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png`"></el-avatar>
           <p><span>姓名：{{ item.user_name }}</span></p>
           <p><span>手机号：{{ item.user_phone }}</span></p>
           <p><span>身份证号：{{ item.user_idcard }}</span></p>
         </div>
       </div>
     </el-form-item>
-    <el-form-item>
+    <el-form-item v-if="![3,4].includes(rank_info.pro_type)">
       <div class="video-wrap">作品展示</div>
       <video-player
         v-if="rank_info.ranks_video_thumb"

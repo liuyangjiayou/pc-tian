@@ -93,7 +93,7 @@
         <template v-slot="{ row }">
           <el-button type="text" @click="viewDetails(row)">查看信息</el-button>
           <el-button v-if="userInfo.type === 2" type="text" @click="handlerEdit(row)">修改</el-button>
-          <el-button v-if="userInfo.type === 2 && row.ranks_status && setting.is_up === 2" type="text" @click="addUprankFile(row)">上传作品</el-button>
+          <el-button v-if="(userInfo.type === 2 && row.ranks_status && setting.is_up) === 2 && ![3,4].includes(row.pro_type)" type="text" @click="addUprankFile(row)">上传作品</el-button>
           <el-button v-if="userInfo.type === 3 && setting.is_df === 2" type="text" @click="handlerScore(row)">打分</el-button>
           <el-button v-if="userInfo.type !== 2 && row.ranks_status !== 1" type="text" @click="handlerPass(row)">通过</el-button>
         </template>
