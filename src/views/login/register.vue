@@ -28,7 +28,7 @@
           </span>
           <el-input
             v-model="registerForm.org_name"
-            placeholder="请填写基础工会名称"
+            placeholder="请填写基层工会名称"
             type="text"
           />
         </div>

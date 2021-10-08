@@ -75,7 +75,7 @@ export const asyncRouter = [
         path: 'index',
         name: 'list',
         component: () => import('@/views/custom/laborAdmin'),
-        meta: { title: '基础工会管理', icon: 'el-icon-s-help' }
+        meta: { title: '基层工会管理', icon: 'el-icon-s-help' }
       }
     ]
   }]
