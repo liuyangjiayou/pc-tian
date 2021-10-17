@@ -42,7 +42,7 @@ const actions = {
         commit('SET_USER_INFO', response.user)
         setToken(response.token)
         setUser(response.user)
-        resolve()
+        resolve(response)
       }).catch(error => {
         reject(error)
       })

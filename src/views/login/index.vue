@@ -32,11 +32,44 @@
         <el-button type="text" style="margin-right:20px;" @click="goRegister">没有账号? 立即注册</el-button>
       </div>
 
+      <!-- 修改 -->
+      <el-dialog
+        title="修改密码"
+        :visible.sync="dialogVisible"
+        :show-close="false"
+        :close-on-click-modal="false"
+        width="30%">
+        <el-form ref="formInfo" :model="info">
+          <el-form-item prop="phone" verify>
+            <el-input v-model="info.phone" placeholder="账号" />
+          </el-form-item>
+          <el-form-item prop="password" verify>
+            <el-input v-model="info.oldpassword" type="password" placeholder="请输入旧密码" />
+          </el-form-item>
+          <el-form-item prop="oldpassword" verify>
+            <el-input v-model="info.password" type="password" placeholder="请输入新密码" />
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="close">取消</el-button>
+          <el-button type="primary" :loading="scoreLoading" @click="addSubScore">确定修改</el-button>
+        </span>
+      </el-dialog>
     </el-form>
   </div>
 </template>
 
 <script>
+import { changePwd } from '@/api/user'
+
+function info() {
+  return {
+    phone: '',
+    password: '',
+    oldpassword: ''
+  }
+}
+
 export default {
   name: 'Login',
   data() {
@@ -51,7 +84,11 @@ export default {
       // 登录loading
       loading: false,
       // 重定向
-      redirect: undefined
+      redirect: undefined,
+
+      dialogVisible: false,
+      info: info(),
+      scoreLoading: false
     }
   },
   watch: {
@@ -67,16 +104,42 @@ export default {
     goRegister() {
       this.$router.push({ path: '/register' })
     },
+    close() {
+      this.dialogVisible = false
+      this.info = info()
+      this.loginForm = {
+        acc: '',
+        pwd: ''
+      }
+    },
     // 开始登录
     async handleLogin() {
       await this.$refs.loginForm.validate()
       this.loading = true
-      this.$store.dispatch('user/login', { username: this.loginForm.acc, password: this.loginForm.pwd }).then(() => {
-        this.$router.push({ path: this.redirect || '/' })
+      this.$store.dispatch('user/login', { username: this.loginForm.acc, password: this.loginForm.pwd }).then((res) => {
+        if (res.user.first_login === 1) {
+          this.dialogVisible = true
+          this.logout()
+        } else {
+          this.$router.push({ path: this.redirect || '/' })
+        }
         this.loading = false
       }).catch(() => {
         this.loading = false
       })
+    },
+    async logout() {
+      await this.$store.dispatch('user/logout')
+      this.$router.push(`/login`)
+    },
+    async addSubScore() {
+      await this.$refs.formInfo.validate()
+      this.scoreLoading = true
+      await changePwd(this.info).finally(() => {
+        this.scoreLoading = false
+      })
+      this.close()
+      this.logout()
     }
   }
 }

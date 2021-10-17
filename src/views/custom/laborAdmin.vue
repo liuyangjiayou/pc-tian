@@ -18,6 +18,11 @@
       width="180">
     </el-table-column>
     <el-table-column
+      prop="name"
+      label="申请人姓名"
+      width="180">
+    </el-table-column>
+    <el-table-column
       prop="org_username"
       label="账号"
       width="180">
