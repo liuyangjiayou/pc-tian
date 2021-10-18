@@ -2,10 +2,9 @@
   <div class="login-container">
     <!--  注册  -->
     <el-form ref="registerForm" :model="registerForm" class="login-form" auto-complete="on" label-position="left">
-      <h5 class="title flex fs20 align-center justify-center"><span>河北省职工“云”上运动会</span></h5>
-      <div class="title-container">
-        <h3 class="title">注册</h3>
-      </div>
+      <h5 class="title flex fs20 align-center justify-center">
+        <el-image :src="logo" style="width: 250px;height: 200px" />
+      </h5>
       <el-form-item prop="org_pid" verify>
         <div class="flex align-center">
           <span class="svg-container">
@@ -33,10 +32,22 @@
           />
         </div>
       </el-form-item>
+      <el-form-item prop="name" verify>
+        <div class="flex align-center">
+          <span class="svg-container">
+            <i class="el-icon-user-solid fs16" />
+          </span>
+          <el-input
+            v-model="registerForm.name"
+            placeholder="请填写您的姓名"
+            type="text"
+          />
+        </div>
+      </el-form-item>
       <el-form-item prop="phone" verify phone>
         <div class="flex align-center">
           <span class="svg-container">
-            <svg-icon icon-class="user" />
+            <i class="el-icon-phone fs16" />
           </span>
           <el-input
             ref="username"
@@ -90,6 +101,7 @@ export default {
   name: 'Login',
   data() {
     return {
+      logo: require('@/assets/logo.png'),
       // 机构数据
       orgs: [],
       // 验证码相关
@@ -106,7 +118,8 @@ export default {
         phone: '',
         password: '',
         sms_code: '',
-        org_name: ''
+        org_name: '',
+        name: ''
       }
     }
   },
@@ -254,7 +267,7 @@ export default {
     position: relative;
     width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
+    padding: 120px 35px 0;
     margin: 0 auto;
     overflow: hidden;
   }

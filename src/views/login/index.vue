@@ -2,10 +2,9 @@
   <div class="login-container">
     <!--  登录  -->
     <el-form ref="loginForm" :model="loginForm" class="login-form" auto-complete="on" label-position="left">
-      <h5 class="title flex fs20 align-center justify-center"><span>河北省职工“云”上运动会</span></h5>
-      <div class="title-container">
-        <h3 class="title">登录</h3>
-      </div>
+      <h5 class="title flex fs20 align-center justify-center">
+        <el-image :src="logo" style="width: 250px;height: 200px" />
+      </h5>
       <el-form-item prop="acc" verify>
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -74,6 +73,7 @@ export default {
   name: 'Login',
   data() {
     return {
+      logo: require('@/assets/logo.png'),
       // 登录还是注册
       is_login: true,
       // 登录表单 石家庄市新华区总工会
@@ -178,7 +178,6 @@ export default {
     width: 448px;
     .el-input {
       box-sizing: border-box;
-      padding-left: 30px;
       width: 100%;
     }
   }
@@ -196,7 +195,7 @@ export default {
     position: relative;
     width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
+    padding: 120px 35px 0;
     margin: 0 auto;
     overflow: hidden;
   }

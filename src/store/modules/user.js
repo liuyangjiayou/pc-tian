@@ -1,6 +1,6 @@
 import { login, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken, setUser, getUser, removeUser } from '@/utils/auth'
-import router, { asyncRouter, constantRoutes, resetRouter, router_404 } from '@/router'
+import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {

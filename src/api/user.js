@@ -143,7 +143,7 @@ export function changePwd(data) {
 // 设置
 export function setting(data) {
   return request({
-    url: 'v1/sys/setting',
+    url: '/v1/sys/setting',
     method: 'post',
     data,
     customOptions: {
@@ -155,7 +155,7 @@ export function setting(data) {
 // 通过赛事报名
 export function chstatusPass(data) {
   return request({
-    url: 'v1/rank/chstatus',
+    url: '/v1/rank/chstatus',
     method: 'post',
     data
   })
