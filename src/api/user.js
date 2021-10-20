@@ -21,6 +21,18 @@ export function getOrgs(data = {}) {
   })
 }
 
+// 获取树型机构
+export function getTreeOrgs(data = {}) {
+  return request({
+    url: 'v1/user/getorgs2',
+    method: 'post',
+    data,
+    customOptions: {
+      no_message: true
+    }
+  })
+}
+
 // 获取图形验证码
 export function getSmsImage(data) {
   return request({

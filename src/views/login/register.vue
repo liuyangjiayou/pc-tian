@@ -10,14 +10,27 @@
           <span class="svg-container">
             <i class="el-icon-s-tools fs16" />
           </span>
-          <el-select v-model="registerForm.org_pid" class="org-select" filterable no-match-text="无搜索结果" placeholder="请选择您归属的工会">
-            <el-option
-              v-for="item in orgs"
-              :key="item.id"
-              :label="item.org_name"
-              :value="item.id"
-            />
-          </el-select>
+          <el-cascader
+            v-model="registerForm.org_pid"
+            :options="orgs"
+            :props="{
+              value: 'id',
+              label: 'org_name',
+              children: 'child',
+              disabled: 'can_use',
+            }"
+            placeholder="请选择您归属的工会"
+            class="org-select"
+            @change="handleChange">
+          </el-cascader>
+          <!--<el-select v-model="registerForm.org_pid" class="org-select" filterable no-match-text="无搜索结果" placeholder="请选择您归属的工会">-->
+          <!--  <el-option-->
+          <!--    v-for="item in orgs"-->
+          <!--    :key="item.id"-->
+          <!--    :label="item.org_name"-->
+          <!--    :value="item.id"-->
+          <!--  />-->
+          <!--</el-select>-->
         </div>
       </el-form-item>
       <el-form-item v-if="registerForm.org_pid !== ''" prop="org_name" verify>
@@ -95,7 +108,7 @@
 </template>
 
 <script>
-import { getOrgs, getSms, getSmsImage, register } from '@/api/user'
+import { getOrgs, getSms, getSmsImage, getTreeOrgs, register } from '@/api/user'
 
 export default {
   name: 'Login',
@@ -114,7 +127,7 @@ export default {
       loading: false,
       // 注册表单
       registerForm: {
-        org_pid: '',
+        org_pid: [],
         phone: '',
         password: '',
         sms_code: '',
@@ -124,12 +137,13 @@ export default {
     }
   },
   mounted() {
-    getOrgs().then(res => {
-      console.log(res)
+    getTreeOrgs().then(res => {
       this.orgs = res.list
     })
   },
   methods: {
+    handleChange() {},
+    resetData() {},
     // 点击获取验证码
     async getSmsImage() {
       const resPhone = /^(?=\d{11}$)^1(?:3\d|4[57]|5[^4\D]|6[67]|7[^249\D]|8\d|9[189])\d{8}$/
@@ -213,6 +227,8 @@ export default {
     async handleRegister() {
       await this.$refs.registerForm.validate()
       this.loading = true
+      const data = this.registerForm
+      this.registerForm.org_pid = data.org_pid[data.org_pid.length - 1]
       await register(this.registerForm).finally(() => {
         this.loading = false
       })

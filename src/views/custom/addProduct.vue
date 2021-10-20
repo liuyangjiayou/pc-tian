@@ -80,7 +80,7 @@ export default {
     'formDate.project_id': {
       handler(val) {
         const item = this.broadcastList.find(item => item.id === val)
-        if (item.pro_type === 1) {
+        if (item.pro_type === 1 || item.pro_type === 3) {
           this.personLength = 10
         } else {
           this.personLength = 5
