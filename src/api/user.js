@@ -94,6 +94,17 @@ export function getBroadCastList() {
   })
 }
 
+// 获取token
+export function getOssToken() {
+  return request({
+    url: '/v1/sys/getsts',
+    method: 'post',
+    customOptions: {
+      no_message: true
+    }
+  })
+}
+
 // 获取队伍信息列表
 export function getProduct(data) {
   return request({
