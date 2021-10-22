@@ -90,8 +90,8 @@ export default {
           const { Expiration: expiration, AccessKeyId: tempAk, AccessKeySecret: tempSk, SecurityToken: token } = res?.[0] || {}
           this.expiration = expiration
           this.dataObj = {
-            region: 'oss-cn-qingdao',
-            bucket: 'testmall',
+            region: 'oss-cn-zhangjiakou',
+            bucket: 'jtyw-sghysydh',
             secure:true,
             accessKeyId: tempAk,
             accessKeySecret: tempSk,
