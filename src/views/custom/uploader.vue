@@ -92,10 +92,12 @@ export default {
           this.dataObj = {
             region: 'oss-cn-qingdao',
             bucket: 'testmall',
+            secure:true,
             accessKeyId: tempAk,
             accessKeySecret: tempSk,
             stsToken: token
           }
+          console.log(this.dataObj)
           resolve(true)
         }).catch(err => {
           console.log(err)

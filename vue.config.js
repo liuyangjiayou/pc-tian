@@ -30,12 +30,12 @@ module.exports = {
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
-    port: 80,
+    port: 8081,
     disableHostCheck: true,
     open: false,
     proxy: {
       '/api': {
-        target: 'https://axmtadmin.zhyell.com',
+        target: 'https://ysydh.hebei.com.cn',
         ws: true,
         changeOrigin: true
       }
