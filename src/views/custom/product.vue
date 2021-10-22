@@ -125,9 +125,9 @@
       :visible.sync="upDateFileVisible"
       width="30%">
       <el-form ref="upDateForm" inline :model="upDateData">
-        <el-form-item label="作品名" prop="ranks_video_name" verify>
+        <!--<el-form-item label="作品名" prop="ranks_video_name" verify>
           <el-input v-model="upDateData.ranks_video_name" placeholder="请填写作品名" />
-        </el-form-item>
+        </el-form-item>-->
         <el-upload
           ref="upload"
           class="upload-demo"
@@ -135,7 +135,7 @@
             Authorization: `Bearer ${$store.state.user.token}`
           }"
           :data="upDateData"
-          action="https://axmtadmin.zhyell.com/api/v1/rank/uprankvideo"
+          action="https://ysydh.hebei.com.cn/api/v1/rank/uprankvideo"
           :auto-upload="false"
           :on-success="upSuccess"
           :file-list="fileList">

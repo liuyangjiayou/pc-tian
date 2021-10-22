@@ -103,10 +103,10 @@ export default {
       getProductEdit({ rank_id: this.$route.query.id }).then(res => {
         this.rank_info = res.rank_info
         this.rank_users = res.rank_users
-        this.playerOptions.poster = res.rank_info.ranks_video
+        this.playerOptions.poster = res.rank_info.ranks_video_thumb
         this.playerOptions.sources.push({
           type: '',
-          src: res.rank_info.ranks_video_thumb
+          src: res.rank_info.ranks_video
         })
       })
     }
