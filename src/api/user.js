@@ -184,3 +184,10 @@ export function chstatusPass(data) {
   })
 }
 
+export function uploadFile(data) {
+  return request({
+    url: '/v1/rank/uprankvideo2',
+    method: 'post',
+    data
+  })
+}

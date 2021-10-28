@@ -3,7 +3,7 @@
     <!--  登录  -->
     <el-form ref="loginForm" :model="loginForm" class="login-form" auto-complete="on" label-position="left">
       <h5 class="title flex fs20 align-center justify-center">
-        <!--        <el-image :src="logo" style="width: 250px;height: 200px" />-->
+       <el-image :src="logo" style="width: 250px;height: 200px" />
       </h5>
       <el-form-item prop="acc" verify>
         <span class="svg-container">

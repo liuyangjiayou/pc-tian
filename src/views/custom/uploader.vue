@@ -92,7 +92,7 @@ export default {
           this.dataObj = {
             region: 'oss-cn-zhangjiakou',
             bucket: 'jtyw-sghysydh',
-            secure:true,
+            secure: true,
             accessKeyId: tempAk,
             accessKeySecret: tempSk,
             stsToken: token

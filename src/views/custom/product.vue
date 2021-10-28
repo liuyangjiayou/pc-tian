@@ -10,8 +10,8 @@
             v-for="item in broadcastList"
             :key="item.id"
             :label="item.pro_name"
-            :value="item.id">
-          </el-option>
+            :value="item.id"
+          />
         </el-select>
       </el-form-item>
       <el-form-item v-if="userInfo.type !== 2" label="选择工会">
@@ -20,8 +20,8 @@
             v-for="item in lowerList"
             :key="item.id"
             :label="item.org_name"
-            :value="item.id">
-          </el-option>
+            :value="item.id"
+          />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -40,38 +40,32 @@
         prop="id"
         label="队伍编号"
         width="100"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="ranks_name"
         label="队伍名称"
         width="100"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="org_name"
         label="所属工会"
         width="200"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="pro_name"
         label="所属项目"
         width="100"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="ranks_link_name"
         label="联系人"
         width="100"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="ranks_link_phone"
         label="联系电话"
         width="130"
-      >
-      </el-table-column>
+      />
       <el-table-column
         label="队伍分数"
       >
@@ -109,7 +103,8 @@
     <el-dialog
       title="打分"
       :visible.sync="dialogVisible"
-      width="30%">
+      width="30%"
+    >
       <el-form ref="formScore" :model="FormScore">
         <el-form-item prop="score" verify number error-message="请输入数字">
           <el-input v-model="FormScore.score" placeholder="" />
@@ -123,29 +118,31 @@
     <el-dialog
       title="上传作品"
       :visible.sync="upDateFileVisible"
-      width="30%">
-      <el-form ref="upDateForm" inline :model="upDateData">
-        <!--<el-form-item label="作品名" prop="ranks_video_name" verify>
-          <el-input v-model="upDateData.ranks_video_name" placeholder="请填写作品名" />
-        </el-form-item>-->
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      width="30%"
+    >
+      <el-form :key="uploadKey" ref="upDateForm" inline :model="upDateData">
         <el-upload
           ref="upload"
-          class="upload-demo"
-          :headers="{
-            Authorization: `Bearer ${$store.state.user.token}`
-          }"
-          :data="upDateData"
-          action="https://ysydh.hebei.com.cn/api/v1/rank/uprankvideo"
+          :before-upload="beforeUpload"
+          :on-success="handleSuccess"
+          :http-request="handleHttpRequest"
+          :headers="uploadHeaders"
+          :limit="1"
+          :disabled="disabled"
           :auto-upload="false"
-          :on-success="upSuccess"
-          :file-list="fileList">
-          <el-button slot="trigger" size="small" type="primary">选择文件</el-button>
-          <div class="el-upload__tip" slot="tip">请上传MP4格式，且不超过500M</div>
+          :multiple="false"
+          action=""
+          :file-list="fileList"
+        >
+          <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+          <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">开始上传</el-button>
+          <div slot="tip" class="el-upload__tip">只能上传{{ allow.file.join('/') }}文件，且不超过{{ allow.size }}M</div>
         </el-upload>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="close">关闭</el-button>
-        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">开始上传</el-button>
       </span>
     </el-dialog>
   </div>
@@ -158,6 +155,18 @@ function formScore() {
     rank_id: '',
     score: ''
   }
+}
+import { getOssToken, uploadFile } from '@/api/user'
+import OSS from 'ali-oss'
+function Client(data) {
+  // 后端提供数据
+  return new OSS({
+    region: data.region, // oss-cn-beijing-internal.aliyuncs.com
+    accessKeyId: data.accessKeyId,
+    accessKeySecret: data.accessKeySecret,
+    stsToken: data.stsToken,
+    bucket: data.bucket
+  })
 }
 export default {
   name: 'Product',
@@ -183,7 +192,11 @@ export default {
       dialogVisible: false,
       // 上传作品
       upDateFileVisible: false,
-      fileList: [],
+      uploadKey: 1,
+      allow: {
+        file: ['.mp4'],
+        size: 500 // 单位是M
+      },
       upDateData: {
         rank_id: '',
         ranks_video_name: ''
@@ -192,7 +205,16 @@ export default {
         is_bm: '',
         is_df: '',
         is_up: ''
-      }
+      },
+      dataObj: {},
+      checkpoint: 0,
+      expiration: '',
+      fileList: [],
+      files: 1,
+      uploadHeaders: {
+        authorization: '*'
+      },
+      disabled: false
     }
   },
   computed: {
@@ -211,6 +233,7 @@ export default {
       this.lowerList = res.list
     })
     this.getList()
+    this.getAliToken()
   },
   methods: {
     // 查看详情
@@ -250,13 +273,118 @@ export default {
         type: response.code === 0 ? 'success' : 'error'
       })
     },
-    async submitUpload() {
-      await this.$refs.upDateForm.validate()
+    submitUpload() {
       this.$refs.upload.submit()
     },
+    getDate() {
+      const date = new Date()
+      const year = date.getFullYear()
+      const month = date.getMonth() > 9 ? date.getMonth() + 1 : `0${date.getMonth() + 1}`
+      const day = date.getDate() > 9 ? date.getDate() : `0${date.getDate()}`
+      const hh = date.getHours() > 9 ? date.getHours() : `0${date.getHours()}`
+      const mm = date.getMinutes() > 9 ? date.getMinutes() : `0${date.getMinutes()}`
+      return `${year}${month}${day}${hh}${mm}`
+    },
+    getAliToken() {
+      return new Promise((resolve, reject) => {
+        getOssToken().then(res => {
+          const { Expiration: expiration, AccessKeyId: tempAk, AccessKeySecret: tempSk, SecurityToken: token } = res?.[0] || {}
+          this.expiration = expiration
+          this.dataObj = {
+            region: 'oss-cn-zhangjiakou',
+            bucket: 'jtyw-sghysydh',
+            secure: true,
+            accessKeyId: tempAk,
+            accessKeySecret: tempSk,
+            stsToken: token
+          }
+          resolve(true)
+        }).catch(err => {
+          console.log(err)
+          reject(false)
+        })
+      })
+    },
+    beforeUpload(file) {
+      return new Promise((resolve, reject) => {
+        this.getAliToken().then(response => {
+          if (response) {
+            resolve(response)
+          } else {
+            reject(response)
+          }
+        }).catch(err => {
+          console.log(err)
+          reject(err)
+        })
+      })
+    },
+    async handleHttpRequest(option) { // 上传OSS
+      try {
+        const vm = this
+        vm.disabled = true
+        const client = Client(this.dataObj); const file = option.file
+        // 随机命名
+        const fileType = (file.name.split('.').pop()).toLowerCase()
+        const random_name = 'zuopin/' + this.random_string(6) + '_' + new Date().getTime() + '.' + fileType
+        if (!this.allow.file.includes('.' + fileType)) {
+          this.$message.warning(`仅允许上传${this.allow.file.join('/')}格式！`)
+          option.onError(`仅允许上传${this.allow.file.join('/')}格式！`)
+          return
+        }
+        if (file.size > this.allow.size * 1024 * 1024) {
+          this.$message.warning(`上传视频大小不能超过${this.allow.size}M！`)
+          option.onError(`上传视频大小不能超过${this.allow.size}M！`)
+          return
+        }
+        // 分片上传文件
+        await client.multipartUpload(random_name, file, {
+          checkpoint: this.checkpoint,
+          progress: async function(p, cpt) {
+            this.checkpoint = cpt
+            const e = {}
+            e.percent = p * 100
+            option.onProgress(e)
+          }
+        }).then(({ res }) => {
+          if (res.statusCode === 200) {
+            option.onSuccess(random_name)
+            console.log('上传成功', res)
+            return res
+          } else {
+            vm.disabled = false
+            option.onError('上传失败')
+          }
+        }).catch(error => {
+          console.error(error)
+          vm.disabled = false
+          option.onError('上传失败')
+        })
+      } catch (error) {
+        console.error(error)
+        this.disabled = false
+        option.onError('上传失败')
+      }
+    },
+    // 提交参数 todo
+    handleSuccess(response, file, fileList) {
+      console.log('ranks_video', 'https://fydh.hebei.com.cn/' + response)
+      uploadFile({ rank_id: this.upDateData.rank_id, ranks_video: 'https://fydh.hebei.com.cn/' + response })
+    },
+    // 随机生成文件名
+    random_string(len) {
+      len = len || 32
+      const chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz12345678'; const maxPos = chars.length; let pwd = ''
+      for (let i = 0; i < len; i++) {
+        pwd += chars.charAt(Math.floor(Math.random() * maxPos))
+      }
+      return pwd
+    },
+
     // 上传作品
     addUprankFile(data) {
       this.upDateData.rank_id = data.id
+      this.uploadKey++
       this.upDateFileVisible = true
     },
 

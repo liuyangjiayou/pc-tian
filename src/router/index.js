@@ -62,12 +62,6 @@ export const constantRoutes = [
       component: () => import('@/views/custom/rankDetails'),
       hidden: true,
       meta: { title: '队伍详情', icon: 'el-icon-s-help' }
-    },
-    {
-      path: 'test-uploader',
-      name: 'uploader',
-      component: () => import('@/views/custom/uploader'),
-      meta: { title: '上传测试', icon: 'el-icon-s-help' },
     }]
   }
 ]
